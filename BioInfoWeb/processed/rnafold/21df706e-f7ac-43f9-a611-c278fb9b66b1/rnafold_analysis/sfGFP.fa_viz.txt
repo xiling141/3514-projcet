@@ -1,0 +1,9 @@
+RNAfold Analysis for sfGFP.fa
+==================================================
+
+Sequence: sfGFP_T021
+Length: 681
+Energy: -155.0 kcal/mol
+Structure: ..(((((.....)))))...((((((.(((((((((((.........))))))).(((((((((((((((..((((..(((((..((.((..((....................))..))))..)))))...))))...))))).))))).))))).......(((((...((....((((((((((.(..((....))..)(((((((((((....)))))..)))))).(((((.(((((.(......).)).))).)))))...))))))))))....)).)))))(((((.((((...((((((.((((...(((((.(((((((((((.........)))).)))))...)).)))..))...)))).))))))....)))).))))).....)))))))).)).((((....(((((((((((((((..(((((.(((..((..((((..........((((((....(((((.(((((.((.(((.....))).))))))).))))).............))))))))))..)))))........((((.........))))((((.....)))).(((((...........)))))...(.((((....))))))))))..))))))..)))))).)))...))))...(((........)))..........
+Sequence: CCAATTCTTGTTGAATTAGATGGTGATGTTAATGGGCACAAATTTTCTGTCCGTGGAGAGGGTGAAGGTGATGCTACAAACGGAAAGCTTACCCTTAAATTTATTTGCACTACTGGAAAACTACCTGTTCCATGGCCAACACTTGTCACTACTCTCACTTATGGTGTTCAATGCTTTTCCCGTTATCCGGATCATATGAAACGGCATGACTTTTTCAAGAGTGCCATGCCCGAAGGTTATGTACAGGAACGCACTATATCTTTCAAAGATGACGGGACTTACAAGACGCGTGCTGAAGTCAAGTTTGAAGGTGATACCCTTGTTAATCGTATCGAGTTAAAAGGTATTGATTTTAAAGAAGATGGAAACATTCTCGGACACAAACTTGAGTACAACTTTAACTCACACAATGTATACATCACGGCAGACAAACAAAAGAATGGAATCAAAGCTAACTTCAAAATTCGCCACAACGTTGAAGATGGATCCGTTCAACTAGCAGACCATTATCAACAAAATACTCCAATTGGCGATGGCCCTGTCCTTTTACCAGACAACCATTACCTGTCGACACAATCTGTCCTTTCGAAAGATCCCAACGAAAAGCGTGACCACATGGTCCTTCTTGAGTTTGTAACTGCTGCTGGGATTACACATGGCATGGATGAGCTCTACAAATAA
+------------------------------

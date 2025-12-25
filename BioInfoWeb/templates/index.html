@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生物信息学软件目录</title>
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            min-height: 90vh;
+        }
+        
+        /* 标题区域 */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 20px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        
+        /* 统计信息 */
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        /* 树形目录样式 */
+        .tree {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .tree ul {
+            list-style: none;
+            padding-left: 25px;
+            margin: 8px 0;
+            border-left: 1px dashed #ddd;
+            display: none; /* 初始隐藏下级 */
+        }
+        
+        .tree li {
+            margin: 12px 0;
+            transition: all 0.3s ease;
+        }
+        
+        /* 大类样式 */
+        .tree-category {
+            cursor: pointer;
+            padding: 15px;
+            background: linear-gradient(135deg, #e8f4fc 0%, #d4eaf7 100%);
+            border-left: 6px solid #3498db;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tree-category:hover {
+            background: linear-gradient(135deg, #d4eaf7 0%, #b8dff7 100%);
+            transform: translateX(5px);
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.15);
+        }
+        
+        .category-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .category-count {
+            background: #3498db;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: normal;
+        }
+        
+        /* 子类样式 */
+        .tree-subcategory {
+            cursor: pointer;
+            padding: 12px 20px;
+            background: #f8f9fa;
+            border-left: 4px solid #2ecc71;
+            border-radius: 6px;
+            margin-left: 10px;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+        
+        .tree-subcategory:hover {
+            background: #e9f7ef;
+            transform: translateX(3px);
+        }
+        
+        .subcategory-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .subcategory-count {
+            background: #2ecc71;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        
+        /* 软件项目样式 */
+        .tree-item {
+            padding: 10px 25px;
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            margin: 5px 30px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .tree-item:hover {
+            background: #f8f9fa;
+            border-color: #3498db;
+            transform: translateX(5px);
+            cursor: pointer;
+        }
+        
+        .tree-item:before {
+            content: "🧬";
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+        
+        .software-name {
+            font-weight: 500;
+        }
+        
+        /* 展开/折叠图标 */
+        .toggle-icon {
+            margin-right: 12px;
+            transition: transform 0.3s ease;
+            font-weight: bold;
+            color: #7f8c8d;
+            font-size: 1.2rem;
+            min-width: 20px;
+            text-align: center;
+        }
+        
+        .collapsed .toggle-icon {
+            transform: rotate(0deg);
+        }
+        
+        .expanded .toggle-icon {
+            transform: rotate(90deg);
+        }
+        
+        /* 加载和错误状态 */
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #7f8c8d;
+            font-size: 1.2rem;
+        }
+        
+        .loading:after {
+            content: "...";
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: ""; }
+            40% { content: "."; }
+            60% { content: ".."; }
+            80%, 100% { content: "..."; }
+        }
+        
+        .error {
+            text-align: center;
+            padding: 40px;
+            color: #e74c3c;
+            background: #fdf0ed;
+            border-radius: 8px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .retry-btn {
+            margin-top: 15px;
+            padding: 8px 20px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .retry-btn:hover {
+            background: #c0392b;
+        }
+        
+        /* 详细信息面板 */
+        .detail-panel {
+            display: none;
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -3px 0 15px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            overflow-y: auto;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .detail-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: #7f8c8d;
+            cursor: pointer;
+            padding: 0 10px;
+            line-height: 1;
+        }
+        
+        .close-btn:hover {
+            color: #e74c3c;
+        }
+        
+        .detail-content {
+            margin-top: 15px;
+        }
+        
+        .detail-item {
+            margin-bottom: 20px;
+        }
+        
+        .detail-label {
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        .detail-value {
+            color: #555;
+            line-height: 1.5;
+        }
+        
+        .software-link, .doi-link {
+            color: #3498db;
+            text-decoration: none;
+            word-break: break-all;
+            display: inline-block;
+            padding: 5px 0;
+        }
+        
+        .software-link:hover, .doi-link:hover {
+            text-decoration: underline;
+            color: #2980b9;
+        }
+        
+        /* 页脚 */
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #95a5a6;
+            font-size: 0.9rem;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .shortcut-hint {
+            background: #f8f9fa;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .stats {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .detail-panel {
+                width: 100%;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                height: 100vh;
+            }
+            
+            .tree-category, .tree-subcategory {
+                padding: 12px;
+                font-size: 1rem;
+            }
+            
+            .tree-item {
+                margin: 5px 15px;
+                padding: 8px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 标题区域 -->
+        <div class="header">
+            <h1>🧬 生物信息学软件目录</h1>
+            <p class="subtitle">点击分类展开，查看详细的软件信息和功能特点</p>
+        </div>
+        
+        <!-- 统计信息 -->
+        <div id="stats-container" class="stats">
+            <!-- JavaScript会动态填充这里 -->
+            <div class="loading">加载统计信息...</div>
+        </div>
+        
+        <!-- 树形目录容器 -->
+        <div id="tree-container">
+            <div class="loading">正在加载软件目录...</div>
+        </div>
+        
+        <!-- 详细信息面板 -->
+        <div id="detail-panel" class="detail-panel">
+            <div class="detail-header">
+                <h2 class="detail-title">软件详情</h2>
+                <button class="close-btn" onclick="closeDetailPanel()">×</button>
+            </div>
+            <div id="detail-content">
+                <!-- 详细信息会动态填充到这里 -->
+            </div>
+        </div>
+
+        <!-- Link for api -->
+        <div>
+            <a href="{{ url_for('api') }}">Go to api</a>
+        </div>
+        
+        <!-- 页脚 -->
+        <footer>
+            <p>生物信息学软件目录系统 &copy; 2023</p>
+            <p class="shortcut-hint">
+                💡 提示：按 <kbd>F12</kbd> 或 <kbd>Ctrl+Shift+I</kbd> 打开开发者工具查看控制台信息
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // 页面加载完成后获取数据
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成，开始获取数据...');
+            loadSoftwareData();
+        });
+
+        // 全局变量存储原始数据，便于搜索等功能扩展
+        let softwareData = null;
+        let softwareDetailsCache = {};
+
+        // 加载软件数据
+        async function loadSoftwareData() {
+            try {
+                console.log('正在请求 /api/get_software_data ...');
+                const response = await fetch('/api/get_software_data');
+                
+                if (!response.ok) {
+                    throw new Error(`网络响应异常: ${response.status} ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('数据获取成功，结构:', data);
+                softwareData = data;
+                
+                // 构建树形目录
+                buildTree(data);
+                
+                // 更新统计信息
+                updateStats(data);
+                
+            } catch (error) {
+                console.error('获取数据失败:', error);
+                showError(error.message);
+            }
+        }
+
+        // 构建树形目录
+        function buildTree(data) {
+            const container = document.getElementById('tree-container');
+            
+            if (!data || Object.keys(data).length === 0) {
+                container.innerHTML = '<div class="loading">暂无数据</div>';
+                return;
+            }
+            
+            let html = '<ul class="tree">';
+            let totalSoftwareCount = 0;
+            
+            // 遍历每个大类
+            Object.entries(data).forEach(([category, subcategories]) => {
+                // 计算该大类下的软件总数
+                let categoryCount = 0;
+                Object.values(subcategories).forEach(items => {
+                    categoryCount += items.length;
+                });
+                totalSoftwareCount += categoryCount;
+                
+                html += `
+                    <li>
+                        <div class="tree-category expanded" onclick="toggleList(this, '${category}')">
+                            <div class="category-info">
+                                <span class="toggle-icon">▶</span>
+                                <span>${category}</span>
+                                <span class="category-count">${categoryCount} 款软件</span>
+                            </div>
+                        </div>
+                        <ul style="display: block;">`;
+                
+                // 遍历每个子类
+                Object.entries(subcategories).forEach(([subcategory, items]) => {
+                    html += `
+                        <li>
+                            <div class="tree-subcategory" onclick="toggleList(this, '${category}', '${subcategory}')">
+                                <div class="subcategory-info">
+                                    <span class="toggle-icon">▶</span>
+                                    <span>${subcategory}</span>
+                                    <span class="subcategory-count">${items.length} 个</span>
+                                </div>
+                            </div>
+                            <ul>`;
+                    
+                    // 遍历每个软件
+                    items.forEach(item => {
+                        // 假设item是字符串（软件名称）
+                        const softwareName = typeof item === 'object' ? item.name : item;
+                        const softwareId = typeof item === 'object' ? item.id : null;
+                        
+                        html += `
+                            <li class="tree-item" onclick="showSoftwareDetails('${category}', '${subcategory}', '${softwareName}')">
+                                <span class="software-name">${softwareName}</span>
+                            </li>`;
+                    });
+                    
+                    html += `</ul></li>`;
+                });
+                
+                html += `</ul></li>`;
+            });
+            
+            html += '</ul>';
+            container.innerHTML = html;
+            
+            console.log(`树形目录构建完成，共 ${Object.keys(data).length} 个大类，${totalSoftwareCount} 个软件`);
+        }
+
+        // 更新统计信息
+        function updateStats(data) {
+            const statsContainer = document.getElementById('stats-container');
+            
+            if (!data || Object.keys(data).length === 0) {
+                statsContainer.innerHTML = '<div class="stat-item">暂无数据</div>';
+                return;
+            }
+            
+            // 计算统计信息
+            let totalCategories = Object.keys(data).length;
+            let totalSubcategories = 0;
+            let totalSoftware = 0;
+            
+            Object.values(data).forEach(subcategories => {
+                totalSubcategories += Object.keys(subcategories).length;
+                Object.values(subcategories).forEach(items => {
+                    totalSoftware += items.length;
+                });
+            });
+            
+            statsContainer.innerHTML = `
+                <div class="stat-item">
+                    <div class="stat-value">${totalCategories}</div>
+                    <div class="stat-label">软件大类</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${totalSubcategories}</div>
+                    <div class="stat-label">子类数量</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${totalSoftware}</div>
+                    <div class="stat-label">软件总数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${Object.keys(data).length}</div>
+                    <div class="stat-label">数据源</div>
+                </div>
+            `;
+            
+            console.log(`统计信息: ${totalCategories} 大类, ${totalSubcategories} 子类, ${totalSoftware} 软件`);
+        }
+
+        // 展开/折叠列表
+        function toggleList(element, category, subcategory = null) {
+            // 阻止事件冒泡，防止触发父元素的点击事件
+            event.stopPropagation();
+            
+            // 切换展开/折叠状态
+            element.classList.toggle('expanded');
+            element.classList.toggle('collapsed');
+            
+            // 找到子列表并切换显示状态
+            const subList = element.parentElement.querySelector('ul');
+            if (subList) {
+                const isNowVisible = subList.style.display === 'block';
+                subList.style.display = isNowVisible ? 'none' : 'block';
+                
+                // 记录日志到控制台
+                const location = subcategory ? `${category} -> ${subcategory}` : category;
+                console.log(`${isNowVisible ? '折叠' : '展开'}了: ${location}`);
+            }
+            
+            // 如果是子类，也切换子类的展开状态
+            if (subcategory) {
+                const childItems = element.parentElement.querySelector('.tree-item');
+                if (childItems) {
+                    console.log(`子类 "${subcategory}" 下有 ${element.parentElement.querySelectorAll('.tree-item').length} 个软件`);
+                }
+            }
+        }
+
+        // 显示软件详细信息
+        async function showSoftwareDetails(category, subcategory, softwareName) {
+            console.log(`请求软件详情: ${category} -> ${subcategory} -> ${softwareName}`);
+            
+            // 显示加载状态
+            const detailContent = document.getElementById('detail-content');
+            detailContent.innerHTML = '<div class="loading">加载详情中...</div>';
+            
+            // 显示详情面板
+            const detailPanel = document.getElementById('detail-panel');
+            detailPanel.style.display = 'block';
+            
+            try {
+                // 这里需要根据你的API调整
+                // 假设你有一个获取详情的API端点
+                const response = await fetch(`/api/get_software_details?name=${encodeURIComponent(softwareName)}`);
+                
+                if (!response.ok) {
+                    throw new Error('获取详情失败');
+                }
+                
+                const details = await response.json();
+                
+                // 构建详情HTML
+                detailContent.innerHTML = `
+                    <div class="detail-item">
+                        <span class="detail-label">软件名称</span>
+                        <div class="detail-value">${details.name || softwareName}</div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">所属分类</span>
+                        <div class="detail-value">${details.category || category} / ${details.subcategory || subcategory}</div>
+                    </div>
+                    
+                    ${details.features ? `
+                    <div class="detail-item">
+                        <span class="detail-label">功能特点</span>
+                        <div class="detail-value">${details.features}</div>
+                    </div>` : ''}
+                    
+                    ${details.url ? `
+                    <div class="detail-item">
+                        <span class="detail-label">官方链接</span>
+                        <div class="detail-value">
+                            <a href="${details.url}" target="_blank" class="software-link">${details.url}</a>
+                        </div>
+                    </div>` : ''}
+                    
+                    ${details.doi ? `
+                    <div class="detail-item">
+                        <span class="detail-label">相关论文</span>
+                        <div class="detail-value">
+                            <a href="https://doi.org/${details.doi}" target="_blank" class="doi-link">DOI: ${details.doi}</a>
+                        </div>
+                    </div>` : ''}
+                    
+                    ${details.created_at ? `
+                    <div class="detail-item">
+                        <span class="detail-label">收录时间</span>
+                        <div class="detail-value">${new Date(details.created_at).toLocaleDateString('zh-CN')}</div>
+                    </div>` : ''}
+                `;
+                
+                console.log(`软件详情加载成功: ${softwareName}`, details);
+                
+            } catch (error) {
+                console.error('加载软件详情失败:', error);
+                
+                // 显示备用信息
+                detailContent.innerHTML = `
+                    <div class="detail-item">
+                        <span class="detail-label">软件名称</span>
+                        <div class="detail-value">${softwareName}</div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">所属分类</span>
+                        <div class="detail-value">${category} / ${subcategory}</div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">详细信息</span>
+                        <div class="detail-value" style="color: #e74c3c;">
+                            详情加载失败，请稍后重试或联系管理员。
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // 关闭详情面板
+        function closeDetailPanel() {
+            const detailPanel = document.getElementById('detail-panel');
+            detailPanel.style.display = 'none';
+            console.log('已关闭详情面板');
+        }
+
+        // 显示错误信息
+        function showError(message) {
+            const container = document.getElementById('tree-container');
+            container.innerHTML = `
+                <div class="error">
+                    <h3>数据加载失败</h3>
+                    <p>${message || '未知错误'}</p>
+                    <button class="retry-btn" onclick="loadSoftwareData()">重试</button>
+                </div>
+            `;
+        }
+
+        // 点击页面其他地方关闭详情面板
+        document.addEventListener('click', function(event) {
+            const detailPanel = document.getElementById('detail-panel');
+            const detailPanelContent = detailPanel.contains(event.target);
+            
+            if (!detailPanelContent && detailPanel.style.display === 'block') {
+                // 检查点击的是否是树形目录中的项目
+                const isTreeItem = event.target.closest('.tree-item') || 
+                                  event.target.closest('.tree-category') || 
+                                  event.target.closest('.tree-subcategory');
+                
+                if (!isTreeItem) {
+                    closeDetailPanel();
+                }
+            }
+        });
+
+        // 键盘快捷键支持
+        document.addEventListener('keydown', function(event) {
+            // ESC键关闭详情面板
+            if (event.key === 'Escape') {
+                closeDetailPanel();
+            }
+            
+            // F5刷新页面
+            if (event.key === 'F5') {
+                event.preventDefault(); // 阻止默认刷新行为
+                console.log('手动刷新页面数据...');
+                loadSoftwareData();
+            }
+            
+            // Ctrl+R 刷新页面 (Cmd+R on Mac)
+            if ((event.ctrlKey || event.metaKey) && event.key === 'r') {
+                event.preventDefault();
+                console.log('快捷键刷新页面数据...');
+                loadSoftwareData();
+            }
+        });
+    </script>
+</body>
+</html>

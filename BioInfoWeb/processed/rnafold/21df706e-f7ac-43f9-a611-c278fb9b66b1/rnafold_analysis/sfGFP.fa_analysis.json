@@ -1,0 +1,9 @@
+[
+  {
+    "id": "sfGFP_T021",
+    "sequence": "CCAATTCTTGTTGAATTAGATGGTGATGTTAATGGGCACAAATTTTCTGTCCGTGGAGAGGGTGAAGGTGATGCTACAAACGGAAAGCTTACCCTTAAATTTATTTGCACTACTGGAAAACTACCTGTTCCATGGCCAACACTTGTCACTACTCTCACTTATGGTGTTCAATGCTTTTCCCGTTATCCGGATCATATGAAACGGCATGACTTTTTCAAGAGTGCCATGCCCGAAGGTTATGTACAGGAACGCACTATATCTTTCAAAGATGACGGGACTTACAAGACGCGTGCTGAAGTCAAGTTTGAAGGTGATACCCTTGTTAATCGTATCGAGTTAAAAGGTATTGATTTTAAAGAAGATGGAAACATTCTCGGACACAAACTTGAGTACAACTTTAACTCACACAATGTATACATCACGGCAGACAAACAAAAGAATGGAATCAAAGCTAACTTCAAAATTCGCCACAACGTTGAAGATGGATCCGTTCAACTAGCAGACCATTATCAACAAAATACTCCAATTGGCGATGGCCCTGTCCTTTTACCAGACAACCATTACCTGTCGACACAATCTGTCCTTTCGAAAGATCCCAACGAAAAGCGTGACCACATGGTCCTTCTTGAGTTTGTAACTGCTGCTGGGATTACACATGGCATGGATGAGCTCTACAAATAA",
+    "structure": "..(((((.....)))))...((((((.(((((((((((.........))))))).(((((((((((((((..((((..(((((..((.((..((....................))..))))..)))))...))))...))))).))))).))))).......(((((...((....((((((((((.(..((....))..)(((((((((((....)))))..)))))).(((((.(((((.(......).)).))).)))))...))))))))))....)).)))))(((((.((((...((((((.((((...(((((.(((((((((((.........)))).)))))...)).)))..))...)))).))))))....)))).))))).....)))))))).)).((((....(((((((((((((((..(((((.(((..((..((((..........((((((....(((((.(((((.((.(((.....))).))))))).))))).............))))))))))..)))))........((((.........))))((((.....)))).(((((...........)))))...(.((((....))))))))))..))))))..)))))).)))...))))...(((........)))..........",
+    "energy": -155.0,
+    "length": 681
+  }
+]

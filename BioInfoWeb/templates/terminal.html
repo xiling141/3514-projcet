@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>实时终端</title>
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+</head>
+<body>
+    <h2>实时Web终端 (Socket.IO)</h2>
+    <input type="text" id="commandInput" placeholder="输入安全命令 (如: pwd)">
+    <button onclick="sendCommand()">执行</button>
+    <button onclick="clearOutput()">清屏</button>
+    <hr>
+    <pre id="output" style="background: #f4f4f4; padding: 10px; height: 400px; overflow: auto;"></pre>
+
+    <script>
+        // 连接到服务器
+        const socket = io('http://' + document.domain + ':' + location.port);
+        const outputEl = document.getElementById('output');
+
+        // 接收服务器推送的命令输出并显示
+        socket.on('command_output', function(data) {
+            outputEl.textContent += data.data;
+            outputEl.scrollTop = outputEl.scrollHeight; // 自动滚动到底部
+        });
+
+        // 发送命令到服务器
+        function sendCommand() {
+            const input = document.getElementById('commandInput');
+            const cmd = input.value.trim();
+            if (cmd) {
+                outputEl.textContent += `\n$ ${cmd}\n`; // 显示输入的命令
+                socket.emit('execute_command', {'command': cmd}); // 发送命令事件
+                input.value = ''; // 清空输入框
+            }
+        }
+        // 允许按回车键发送命令
+        document.getElementById('commandInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') { sendCommand(); }
+        });
+        function clearOutput() { outputEl.textContent = ''; }
+    </script>
+</body>
+</html>

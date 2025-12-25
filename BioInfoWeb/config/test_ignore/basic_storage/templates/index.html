@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生物信息学软件目录</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif; }
+        body { background: #f5f7fa; color: #333; padding: 20px; line-height: 1.6; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
+        h1 { color: #2c3e50; text-align: center; margin-bottom: 30px; border-bottom: 2px solid #3498db; padding-bottom: 15px; }
+        .tree { list-style: none; padding-left: 0; }
+        .tree ul { list-style: none; padding-left: 25px; margin: 8px 0; border-left: 1px dashed #ddd; display: none; } /* 初始隐藏下级 */
+        .tree li { margin: 10px 0; }
+        .tree-category, .tree-subcategory { cursor: pointer; padding: 12px 15px; border-radius: 6px; transition: all 0.3s ease; display: flex; align-items: center; }
+        .tree-category { background: #e8f4fc; border-left: 5px solid #3498db; font-weight: bold; margin-top: 15px; }
+        .tree-category:hover { background: #d4eaf7; transform: translateX(3px); }
+        .tree-subcategory { background: #f8f9fa; border-left: 3px solid #2ecc71; margin-left: 10px; }
+        .tree-subcategory:hover { background: #e9f7ef; }
+        .tree-item { padding: 10px 20px; background: #fff; border: 1px solid #eee; border-radius: 4px; margin: 5px 25px; color: #555; display: flex; align-items: center; }
+        .tree-item:before { content: "▸"; margin-right: 10px; color: #95a5a6; }
+        .toggle-icon { margin-right: 10px; transition: transform 0.2s; font-weight: bold; color: #7f8c8d; }
+        .collapsed .toggle-icon { transform: rotate(0deg); }
+        .expanded .toggle-icon { transform: rotate(90deg); }
+        .loading, .error { text-align: center; padding: 40px; color: #7f8c8d; }
+        .error { color: #e74c3c; }
+        footer { text-align: center; margin-top: 30px; color: #95a5a6; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧬 生物信息学软件目录</h1>
+        <div id="tree-container">
+            <div class="loading">正在加载数据...</div>
+        </div>
+        <footer>点击大类或子类可以展开或折叠详细信息</footer>
+    </div>
+
+    <script>
+        // 页面加载完成后，从Flask后端获取数据
+        window.addEventListener('DOMContentLoaded', (event) => {
+            fetch('/api/get_software_data')
+                .then(response => {
+                    if (!response.ok) { throw new Error('网络响应异常'); }
+                    return response.json();
+                })
+                .then(data => { buildTree(data); })
+                .catch(error => {
+                    console.error('获取数据失败:', error);
+                    document.getElementById('tree-container').innerHTML = `<div class="error">加载失败，请刷新页面或检查网络。</div>`;
+                });
+        });
+
+        function buildTree(data) {
+            const container = document.getElementById('tree-container');
+            if (!data || Object.keys(data).length === 0) {
+                container.innerHTML = '<div class="loading">暂无数据</div>';
+                return;
+            }
+            
+            let html = '<ul class="tree">';
+            // 遍历第一级：大类
+            for (const [category, subcategories] of Object.entries(data)) {
+                html += `
+                    <li>
+                        <div class="tree-category expanded" onclick="toggleList(this)">
+                            <span class="toggle-icon">▸</span>
+                            <strong>${category}</strong>
+                        </div>
+                        <ul>`; // 这里ul初始是显示的，靠CSS的display控制
+                // 遍历第二级：子类
+                for (const [subcategory, items] of Object.entries(subcategories)) {
+                    html += `
+                        <li>
+                            <div class="tree-subcategory" onclick="toggleList(this)">
+                                <span class="toggle-icon">▸</span>
+                                ${subcategory}
+                            </div>
+                            <ul>`;
+                    // 遍历第三级：具体软件名称
+                    items.forEach(item => {
+                        html += `<li class="tree-item">${item}</li>`;
+                    });
+                    html += `</ul></li>`;
+                }
+                html += `</ul></li>`;
+            }
+            html += '</ul>';
+            container.innerHTML = html;
+        }
+
+        // 展开/折叠功能
+        function toggleList(element) {
+            // 切换当前点击元素的展开/折叠类名
+            element.classList.toggle('expanded');
+            element.classList.toggle('collapsed');
+            // 找到紧接着的下一个ul元素（即子列表）并切换其显示状态
+            const subList = element.nextElementSibling;
+            if (subList && subList.tagName === 'UL') {
+                subList.style.display = subList.style.display === 'block' ? 'none' : 'block';
+            }
+        }
+    </script>
+</body>
+</html>

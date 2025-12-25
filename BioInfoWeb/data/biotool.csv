@@ -1,0 +1,140 @@
+大类,子类,软件/数据库名称,功能特点,链接,论文DOI
+序列比对与搜索工具,短读长比对工具,BWA,将短读长高效比对到参考基因组，支持三种算法，适合不同长度序列,http://bio-bwa.sourceforge.net/,10.1093/bioinformatics/btp324
+序列比对与搜索工具,短读长比对工具,Bowtie2,快速短读长比对，低内存消耗，适合大规模测序数据,https://bowtie-bio.sourceforge.io/bowtie2/,10.1038/nmeth.1923
+序列比对与搜索工具,短读长比对工具,Minimap2,长读长 (PacBio/Nanopore) 和基因组比对，适用于高度相似序列,https://github.com/lh3/minimap2,10.1093/bioinformatics/bty191
+序列比对与搜索工具,短读长比对工具,STAR,RNA-seq 数据剪接位点感知比对，速度快，适合长读长和复杂转录组,https://github.com/alexdobin/STAR,10.1093/bioinformatics/bts635
+序列比对与搜索工具,全局 / 局部比对工具,BLAST,序列数据库相似性搜索，支持多种比对模式 (核酸 / 蛋白质),https://blast.ncbi.nlm.nih.gov/,10.1016/S0022-2836(05)80360-2
+序列比对与搜索工具,全局 / 局部比对工具,Clustal Omega,多序列比对，适合同源序列分析，提供渐进式比对策略,http://www.clustal.org/omega/,10.1093/bioinformatics/btu033
+序列比对与搜索工具,全局 / 局部比对工具,MAFFT,高精度多序列比对，提供多种算法，适合不同规模数据集,https://mafft.cbrc.jp/alignment/software/,10.1093/molbev/mst010
+序列比对与搜索工具,全局 / 局部比对工具,DIAMOND,蛋白质序列比对，速度比 BLAST 快 100 倍，适合大规模蛋白质组分析,https://github.com/bbuchfink/diamond,10.1038/nmeth.3176
+质控与预处理软件,,FastQC,测序数据质量评估，生成 12 项质量指标报告 (碱基质量 / GC 含量等),https://www.bioinformatics.babraham.ac.uk/projects/fastqc/,-
+质控与预处理软件,,MultiQC,整合多个质控报告为一个综合报告，便于批量样本分析,https://multiqc.info/,10.1093/bioinformatics/btv563
+质控与预处理软件,,Trimmomatic,切除低质量末端、接头序列和污染，支持单端 / 双端测序,http://www.usadellab.org/cms/?page=trimmomatic,10.1093/bioinformatics/btu170
+质控与预处理软件,,Cutadapt,专门去除测序接头、引物等，支持多种接头类型和复杂结构,https://github.com/marcelm/cutadapt,10.14806/ej.17.1.200
+质控与预处理软件,,SeqKit,一站式 FASTA/FASTQ 文件处理，支持序列提取、过滤、转换等操作,https://github.com/shenwei356/seqkit,10.1093/bioinformatics/btv635
+基因组分析软件,变异检测工具,GATK,基因组变异检测 (SNP/indel) 标准工具，提供完整变异检测流程,https://gatk.broadinstitute.org/,10.1101/gr.107524.110
+基因组分析软件,变异检测工具,SAMtools/BCFtools,处理 SAM/BAM 格式文件，变异检测和格式转换，NGS 必备工具,https://github.com/samtools/,10.1093/bioinformatics/btp352
+基因组分析软件,变异检测工具,VarScan2,体细胞变异和拷贝数变异检测，适合肿瘤基因组研究,https://varscan.sourceforge.net/,10.1101/gr.109492.110
+基因组分析软件,变异检测工具,Delly,结构变异检测 (缺失 / 插入 / 倒位 / 易位)，适合癌症基因组学研究,https://github.com/dellytools/delly,10.1038/nmeth.2867
+基因组分析软件,基因组组装工具,SPAdes,基因组组装，特别适合单细胞和混合测序数据，有专门版本 (如 metaSPAdes),http://cab.spbu.ru/software/spades/,10.1089/cmb.2012.0021
+基因组分析软件,基因组组装工具,Canu,专为 PacBio 和 Oxford Nanopore 长读长测序数据设计的组装工具,https://canu.readthedocs.io/,10.1101/gr.215087.116
+基因组分析软件,基因组组装工具,Flye,长读长组装工具，速度快，内存占用少，适合大型基因组,https://github.com/fenderglass/Flye,10.1038/nmeth.4396
+基因组分析软件,基因组组装工具,Hifiasm,单倍型解析组装，适合二倍体和多倍体基因组，支持 PacBio HiFi 数据,https://github.com/chhylp123/hifiasm,10.1038/s41587-020-0461-0
+转录组分析软件,RNA-seq 分析工具,HISAT2,RNA-seq 数据剪接位点感知比对，高效处理内含子 - 外显子结构,https://ccb.jhu.edu/software/hisat2/,10.1038/nmeth.3317
+转录组分析软件,RNA-seq 分析工具,DESeq2,RNA-seq 差异表达分析，基于负二项分布，控制假阳性，适合多样本设计,https://bioconductor.org/packages/DESeq2,10.1186/s13059-014-0550-8
+转录组分析软件,RNA-seq 分析工具,edgeR,RNA-seq 差异表达分析，适合小样本数据，提供灵活实验设计支持,https://bioconductor.org/packages/edgeR,10.1093/bioinformatics/btp616
+转录组分析软件,RNA-seq 分析工具,StringTie,转录本组装和表达定量，能发现新转录本，支持长 / 短读长混合组装,https://ccb.jhu.edu/software/stringtie/,10.1038/nbt.3122
+转录组分析软件,RNA-seq 分析工具,featureCounts,快速基因表达定量，将 reads 分配到基因，生成表达矩阵,https://subread.sourceforge.net/,10.1093/bioinformatics/btt656
+转录组分析软件,RNA-seq 分析工具,Kallisto,快速无比对 RNA-seq 定量，低内存占用，适合大规模数据,https://pachterlab.github.io/kallisto/,10.1038/nbt.3519
+转录组分析软件,RNA-seq 分析工具,Salmon,快速 RNA-seq 定量，支持转录本水平和基因水平分析，提供偏差校正,https://salmon.readthedocs.io/,10.1038/nmeth.4197
+转录组分析软件,RNA-seq 分析工具,Trinity,无参考转录组组装，特别适合非模式生物，可重建全长转录本,https://github.com/trinityrnaseq/trinityrnaseq,10.1038/nbt.1883
+转录组分析软件,可变剪接分析工具,rMATS,差异可变剪接分析，识别不同条件下剪接模式的变化,https://rnaseq-mats.sourceforge.net/,10.1093/nar/gkt1145
+转录组分析软件,可变剪接分析工具,SUPPA2,剪接异构体表达定量和差异分析，支持多种剪接事件类型,https://github.com/comprna/SUPPA2,10.1093/nar/gky958
+转录组分析软件,可变剪接分析工具,SpliceGrapher,构建和可视化剪接图，展示外显子 - 内含子结构和可变剪接关系,https://www.splicegrapher.org/,10.1101/gr.087092.108
+蛋白质分析软件,蛋白质结构预测工具,AlphaFold 3,基于深度学习的蛋白质三维结构预测，可预测蛋白质 - 配体复合物，80% 预测精度与实验误差仅差 2 埃,https://www.deepmind.com/research/alphafold,10.1038/s41586-021-03819-2
+蛋白质分析软件,蛋白质结构预测工具,AlphaFold Multimer,蛋白质复合体结构预测，预测蛋白质 - 蛋白质相互作用界面,https://www.deepmind.com/research/alphafold,10.1038/s41586-022-04864-x
+蛋白质分析软件,蛋白质结构预测工具,RoseTTAFold,三轨神经网络架构，同时考虑序列 / 距离 / 角度信息，速度快，适合大型蛋白质,https://salilab.org/rosettafold/,10.1126/science.abj8754
+蛋白质分析软件,蛋白质结构预测工具,I-TASSER,多模板片段组装和结构优化，综合预测精度高，适合无明显同源模板的蛋白,https://zhanglab.ccmb.med.umich.edu/I-TASSER/,10.1002/prot.24340
+蛋白质分析软件,蛋白质结构预测工具,SWISS-MODEL,基于同源建模的蛋白质结构预测，当有高质量模板时精度良好,https://swissmodel.expasy.org/,10.1093/nar/gku340
+蛋白质分析软件,蛋白质结构预测工具,ESMFold,Meta AI 开发，纯语言模型思路，速度比 AlphaFold 快 60 倍，适合超大蛋白质 (>5000 氨基酸),https://github.com/facebookresearch/esm,10.1038/s41586-022-05482-0
+蛋白质分析软件,蛋白质结构可视化与分析,PyMOL,蛋白质结构三维可视化和分析，支持多种格式，广泛用于结构生物学,https://pymol.org/2/,-
+蛋白质分析软件,蛋白质结构可视化与分析,ChimeraX,分子可视化系统，支持蛋白质 / 核酸 / 小分子复合物，提供丰富分析工具,https://www.cgl.ucsf.edu/chimerax/,10.1002/jcc.26280
+蛋白质分析软件,蛋白质结构可视化与分析,UCSF Chimera,分子可视化和分析，特别适合大型复合物、多序列比对和结构比较,https://www.cgl.ucsf.edu/chimera/,10.1002/jcc.20084
+蛋白质分析软件,蛋白质结构可视化与分析,VMD,分子动力学模拟可视化，支持轨迹分析和多种分子表示方法,https://www.ks.uiuc.edu/Research/vmd/,10.1016/0263-7855(96)00018-5
+非编码 RNA 分析工具,miRNA 分析工具,miRDeep2,miRNA 前体和成熟体预测，适用于小 RNA 测序数据分析,https://www.mdc-berlin.de/8551983/en,10.1038/nmeth.1840
+非编码 RNA 分析工具,miRNA 分析工具,miRBase,miRNA 序列数据库，提供全面的 miRNA 注释信息,https://www.mirbase.org/,10.1093/nar/gku171
+非编码 RNA 分析工具,miRNA 分析工具,TargetFinder,植物小 RNA 靶标预测，提供详细得分和碱基配对图，支持参数自定义,https://github.com/carringtonlab/TargetFinder,10.1105/tpc.110.078225
+非编码 RNA 分析工具,miRNA 分析工具,miRecords,整合多种靶基因预测工具 (如 DIANA-microT/MicroInspector)，包含实验验证和预测靶基因,https://mirecords.biolead.org/,10.1093/nar/gkm923
+非编码 RNA 分析工具,miRNA 分析工具,RNAhybrid,RNA-RNA 相互作用预测，计算最小自由能，预测 miRNA-mRNA 结合位点,https://bibiserv.cebitec.uni-bielefeld.de/rnahybrid,10.1093/nar/gkm1079
+非编码 RNA 分析工具,lncRNA 分析工具,PLEK/PLEKv2,lncRNA 与 mRNA 分类预测，人类数据集准确率达 98.7%，支持跨物种预测,https://sourceforge.net/projects/plek/,10.1093/nar/gkt1146
+非编码 RNA 分析工具,lncRNA 分析工具,LncTar,lncRNA 靶基因预测，基于序列互补性和功能相关性分析,https://github.com/zhaolab/LncTar,10.1093/nar/gkt777
+非编码 RNA 分析工具,lncRNA 分析工具,GDCRNATools,TCGA 数据中 lncRNA 分析，包括差异表达和 ceRNA 分析 (内源竞争性 RNA),https://bioconductor.org/packages/GDCRNATools,10.1093/nar/gkv1060
+非编码 RNA 分析工具,lncRNA 分析工具,NONCODE,lncRNA 数据库，提供全面的 lncRNA 注释和功能预测信息,http://www.noncode.org/,10.1093/nar/gkt1244
+非编码 RNA 分析工具,circRNA 分析工具,CIRI/CIRI3,circRNA 反向剪接位点检测和定量，多线程支持，适合大规模数据,https://sourceforge.net/projects/ciri/,10.1093/nar/gkt1115
+非编码 RNA 分析工具,circRNA 分析工具,FindCirc,从 RNA-seq 数据中识别 circRNA，基于比对到参考基因组的嵌合 reads,https://github.com/marvin-jens/FindCirc,10.1101/gr.173359.114
+非编码 RNA 分析工具,circRNA 分析工具,circBase,circRNA 数据库，收集和注释已知 circRNA，提供序列和表达信息,https://www.circbase.org/,10.1261/rna.045646.114
+单细胞测序分析软件,,Seurat,单细胞 RNA-seq 数据标准化、聚类、差异表达和可视化，支持多组学整合,https://github.com/satijalab/seurat,10.1038/nbt.4096
+单细胞测序分析软件,,Scanpy,大规模单细胞数据分析，支持 Python 环境，提供丰富可视化和分析工具,https://scanpy.readthedocs.io/,10.1186/s13059-017-1382-0
+单细胞测序分析软件,,Cell Ranger,10x Genomics 官方单细胞数据分析流程，从原始数据生成表达矩阵,https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger,10.1038/nbt.4042
+单细胞测序分析软件,,Monocle 3,细胞发育轨迹分析，重建细胞分化过程中基因表达动态变化，支持复杂分支结构,https://cole-trapnell-lab.github.io/monocle3/,10.1038/nmeth.4402
+单细胞测序分析软件,,inferCNV,单细胞 CNV (拷贝数变异) 分析，适合肿瘤异质性和发育过程研究,https://github.com/broadinstitute/inferCNV,10.1038/nmeth.4315
+单细胞测序分析软件,,SCP,单细胞流程 R 包，提供全面的单细胞数据处理和下游分析工具,https://bioconductor.org/packages/SCP/,10.1093/nar/gkw867
+单细胞测序分析软件,,scRepertoire 2,单细胞免疫谱分析，特别适合 TCR/BCR 受体测序数据分析,https://github.com/single-cell-genomics/scRepertoire,-
+表观遗传学分析软件,DNA 甲基化分析工具,Bismark,甲基化测序数据比对和甲基化位点检测，支持多种测序平台 (如 Illumina),https://www.bioinformatics.babraham.ac.uk/projects/bismark/,10.1093/bioinformatics/btp684
+表观遗传学分析软件,DNA 甲基化分析工具,MethylKit,甲基化数据差异分析，识别不同条件下甲基化水平变化的区域,https://bioconductor.org/packages/MethylKit/,10.1093/bioinformatics/btr097
+表观遗传学分析软件,DNA 甲基化分析工具,MeDIP-seq,甲基化 DNA 免疫沉淀测序数据分析，识别基因组甲基化区域,https://www.ebi.ac.uk/arrayexpress/help/methylation_protocols.html,-
+表观遗传学分析软件,DNA 甲基化分析工具,BS-Seeker2,甲基化测序数据处理，包括比对、甲基化位点识别和差异分析,https://github.com/BS-Seeker/BS-Seeker2,10.1093/nar/gks1063
+表观遗传学分析软件,染色质可及性与蛋白质 - DNA 相互作用分析,ATAC-seq,染色质可及性分析，识别基因组开放区域和潜在调控元件，样本需求少，检测灵敏,https://www.encodeproject.org/atac-seq/,10.1038/nmeth.3382
+表观遗传学分析软件,染色质可及性与蛋白质 - DNA 相互作用分析,CUT&Tag,DNA - 蛋白质相互作用分析，低样本量需求，高灵敏度，适合微量样本和单细胞研究,https://www.protocols.io/view/cut-tag-protocol-p8x9e33r,10.1038/nmeth.4249
+表观遗传学分析软件,染色质可及性与蛋白质 - DNA 相互作用分析,ChIP-seq,染色质免疫沉淀测序，确定转录因子和组蛋白修饰在全基因组结合位点,https://www.encodeproject.org/chip-seq/,10.1038/nmeth.1906
+表观遗传学分析软件,染色质可及性与蛋白质 - DNA 相互作用分析,MACS2,ChIP-seq/ATAC-seq 峰检测，识别蛋白质结合区域，提供统计显著性评估,https://github.com/macs3-project/MACS,10.1101/gr.137115.112
+表观遗传学分析软件,染色质可及性与蛋白质 - DNA 相互作用分析,HOMER,ChIP-seq 数据分析，包括峰检测、motif 发现和功能注释，支持多种物种,http://homer.ucsd.edu/homer/,10.1101/gr.108133.110
+表观遗传学分析软件,三维基因组分析,HiC-Pro,Hi-C 数据处理和分析，从原始测序数据到交互矩阵构建，支持质量控制,https://github.com/nservant/HiC-Pro,10.1093/nar/gkt1145
+表观遗传学分析软件,三维基因组分析,Juicebox,Hi-C 数据可视化和分析，支持三维基因组结构可视化和交互分析,https://github.com/aidenlab/Juicebox,10.1016/j.cels.2016.06.015
+表观遗传学分析软件,三维基因组分析,3D-DNA,从 Hi-C 数据中组装高质量基因组，构建染色体三维结构模型,https://github.com/theaidenlab/3d-dna,10.1016/j.cell.2017.05.033
+代谢组学分析软件,,MetaboAnalyst 6.0,代谢组学数据全面分析平台，支持数据预处理、通路分析、富集分析、网络分析和多组学整合，集成约 50 万代谢物和 150 万 MS2 光谱,https://new.metaboanalyst.ca/,10.1093/nar/gkab480
+代谢组学分析软件,,XCMS,非靶向代谢组学数据分析，色谱峰检测、对齐和特征提取，适合 LC-MS 数据,https://bioconductor.org/packages/XCMS/,10.1021/ac051437j
+代谢组学分析软件,,MZmine 2,代谢组学数据处理和可视化，支持多种质谱数据，提供峰检测、对齐和统计分析,https://mzmine.github.io/,10.1021/acs.analchem.5b02543
+代谢组学分析软件,,MassBank,代谢物质谱数据库，提供标准质谱图和注释信息，支持跨平台数据比较,https://www.massbank.eu/,10.1002/rcm.4067
+代谢组学分析软件,,MetaboAnalystR,R 语言版代谢组学分析工具，提供单 / 多生物标志物分析和预测模型创建,https://new.metaboanalyst.ca/docs/RTutorial.xhtml,10.1093/bioinformatics/btu616
+空间转录组学分析软件,,SpaSEG,组织空间结构域识别、空间高变基因检测、多切片整合和细胞间相互作用解析，跨平台兼容和多尺度分辨率处理能力,https://www.genomics.cn/news/info_itemid_7328.html,-
+空间转录组学分析软件,,Spotiphy,结合测序 ST 和成像 ST 优势，提供单细胞分辨率的大区域基因表达信息，适合肿瘤研究,https://www.cancer.gov/about-nci/organization/cbiit/news-events/news/2025/nci-funded-artificial-intelligence-ai-tool-powers-spatial-transcriptomics,-
+空间转录组学分析软件,,Trekker,单细胞空间转录组分析，通过 "空间定位 + 基因解码" 直接对单细胞数据进行位置解析，兼容现有单细胞测序平台,https://www.10xgenomics.com/cn/products/trekker,-
+空间转录组学分析软件,,SpatialRNA,基于图神经网络的空间转录组单分子数据分析，支持组织自动分块和子图生成，适用于肺纤维化和卵巢癌研究,https://www.biomart.cn/technology/20250225/108302.html,-
+空间转录组学分析软件,,STMGraph,空间转录组上下文感知深度学习框架，整合位置信息和基因表达数据，提高组织微环境识别精度,https://github.com/ma-xiaokai/STMGraph,-
+空间转录组学分析软件,,PASSAGE,基于多层次注意力的大规模异构空间组学表征方法，从切片、细胞、分子多层次进行特征学习,https://gibh.cas.cn/kxyj/kyjz/202502/t20250214_7527356.html,-
+宏基因组学分析软件,,MetaPhlAn 4,宏基因组物种组成分析，提供菌株水平的物种鉴定，准确率高，速度快,https://github.com/biobakery/MetaPhlAn,10.1038/s41564-022-01248-5
+宏基因组学分析软件,,HUMAnN 3,宏基因组功能注释和通路分析，将测序 reads 映射到基因家族和代谢通路,https://github.com/biobakery/HUMAnN,10.1038/ismej.2017.201
+宏基因组学分析软件,,MEGAN,宏基因组数据可视化和分析，将序列比对结果分配到分类单元，提供交互式可视化,https://ab.inf.uni-tuebingen.de/software/megan/,10.1101/gr.192302.115
+宏基因组学分析软件,,MetaQUBIC,基于双聚类的功能基因分类软件，特别适合宏基因组 / 宏转录组数据分析,https://sourceforge.net/projects/metacubit/,10.1101/gr.213713.116
+宏基因组学分析软件,,deFUME,功能宏基因组学数据分析、注释和可视化的基于 Web 的工具,https://github.com/EvdH0/deFUME,10.1093/nar/gkx1079
+宏基因组学分析软件,,ProteoSeeker,功能丰富的宏基因组分析工具，提供全面的宏基因组探索和可视化,https://www.nature.com/articles/s41592-022-01575-5,10.1038/s41592-022-01575-5
+系统生物学与网络分析软件,,Cytoscape,生物网络可视化和分析平台，支持蛋白质互作、代谢通路等网络构建和分析，插件丰富,https://cytoscape.org/,10.1101/gr.1239303
+系统生物学与网络分析软件,,STRING,蛋白质互作预测数据库，整合多源互作信息 (实验 / 数据库 / 文本挖掘)，提供功能富集分析,https://string-db.org/,10.1093/nar/gkaa1074
+系统生物学与网络分析软件,,PathVisio,通路可视化工具，支持 KEGG/Reactome 等通路数据库，分析基因表达对通路影响,https://pathvisio.org/,10.1093/bioinformatics/btq003
+系统生物学与网络分析软件,,GeneMANIA,基因功能预测和网络构建，基于已知功能的基因推断未知基因功能，提供综合网络可视化,https://genemania.org/,10.1038/nmeth.1306
+系统生物学与网络分析软件,,ClueGO,Cytoscape 插件，富集分析和通路分组，将基因本体和通路信息组织成功能模块,https://apps.cytoscape.org/apps/cluego,10.1186/1471-2105-12-483
+系统生物学与网络分析软件,,iPath 3,交互式代谢通路可视化工具，支持多种物种代谢网络展示和分析,https://pathways.embl.de/,10.1093/nar/gky1035
+系统发育分析软件,,MEGA 11,分子进化和系统发育分析，图形界面友好，适合初学者，支持序列比对和进化树构建,https://www.megasoftware.net/,10.1093/molbev/msab120
+系统发育分析软件,,IQ-TREE 2,高效最大似然系统发育树构建，支持多种模型和快速 bootstrapping，自动选择最优模型,https://iqtree.org/,10.1093/molbev/msab068
+系统发育分析软件,,RAxML-NG,快速最大似然系统发育树构建，特别适合大数据集，支持多种置换模型,https://github.com/amkozlov/raxml-ng,10.1093/bioinformatics/btz305
+系统发育分析软件,,MrBayes,贝叶斯系统发育分析，估计进化树后验概率分布，提供不确定性评估,https://nbisweden.github.io/MrBayes/,10.1093/bioinformatics/btu232
+系统发育分析软件,,BEAST 2,贝叶斯进化分析，整合分子钟和系统发育树，估计分化时间和进化速率,https://beast.community/beast2,10.1093/sysbio/syy022
+系统发育分析软件,,PhyML,最大似然系统发育树构建，计算效率高，适合中等规模数据集,https://www.atgc-montpellier.fr/phyml/,10.1093/sysbio/syi050
+药物设计与分子模拟软件,,AutoDock Vina,分子对接工具，快速预测小分子与蛋白质结合模式，适合虚拟筛选,https://vina.scripps.edu/,10.1002/jcc.21334
+药物设计与分子模拟软件,,Schrodinger,综合性药物设计平台，提供分子对接、动力学模拟、ADMET 预测等完整解决方案,https://www.schrodinger.com/,-
+药物设计与分子模拟软件,,MaXFlow,人工智能药物设计平台，支持 AI 分子生成、虚拟筛选、性质预测和动力学模拟,https://www.neotrident.com/product/cadd_aidd.html,-
+药物设计与分子模拟软件,,Moldina,多配体分子对接工具，比 AutoDock Vina 速度提高数百倍，保持高精准度,https://github.com/statisticalbiomedicine/Moldina,10.1093/bioinformatics/btz566
+药物设计与分子模拟软件,,Uni-Docking,GPU 加速分子对接引擎，比单 CPU 核心快 1000 倍，支持多种打分函数,https://github.com/deepmodeling/Uni-Docking,-
+药物设计与分子模拟软件,,SeeSAR,分子设计工具，支持结合模式探究、虚拟筛选和共价对接，适用于类药性优化,https://www.moldesigner.com/,-
+药物设计与分子模拟软件,,Hermite,药物计算设计平台，融合 AI、物理建模和高性能计算，提供一站式药物研发解决方案,https://www.molaid.com/baike/tool/312,-
+药物设计与分子模拟软件,,OpenEye,药物先导发现工具，擅长分子对接、虚拟筛选和基于片段的药物设计,https://www.eyesopen.com/,-
+一站式分析平台,,Galaxy,网页式分析平台，集成 1300 + 工具，无需编程，支持工作流设计和共享,https://galaxyproject.org/,10.1101/gr.3616005
+一站式分析平台,,Bioconductor,R 语言生态系统，500 + 专门 R 包，覆盖几乎所有生物信息学领域,https://bioconductor.org/,10.1186/gb-2004-5-10-r80
+一站式分析平台,,HiOmics,云原生分析平台，配备 300 + 插件，提供综合组学分析和可视化，支持 Docker 容器,https://github.com/HiOmics/HiOmics,-
+一站式分析平台,,CLC Genomics Workbench,商业综合分析平台，支持从原始数据到高级分析的全流程解决方案,https://digitalinsights.qiagen.com/,
+一站式分析平台,,Partek Flow,商业分析平台，提供直观界面和强大统计功能，适合微阵列和 NGS 数据分析,https://www.partek.com/,-
+一站式分析平台,,ArrayStar,一站式多组学数据分析平台，特别适合 RNA-seq、ChIP-seq 和 microarray 数据,https://www.dnanexus.com/,
+一站式分析平台,,百迈客云,集成多种生信分析软件，形成标准化分析流程，支持参数自定义,https://www.biocloud.net/,-
+生物信息学数据库资源,基因组 / 核酸数据库,GenBank,全球最大核酸序列数据库，包含 59 亿条记录，47 万亿碱基对,https://www.ncbi.nlm.nih.gov/genbank/,NCBI 维护，每日更新
+生物信息学数据库资源,基因组 / 核酸数据库,Ensembl,脊椎动物基因组注释数据库，提供基因结构和功能预测,https://www.ensembl.org/,EMBL-EBI 和 Wellcome Trust 维护
+生物信息学数据库资源,基因组 / 核酸数据库,RefSeq,经过人工审核的非冗余基因序列数据库，提供标准参考序列,https://www.ncbi.nlm.nih.gov/refseq/,NCBI 维护，适合变异检测
+生物信息学数据库资源,基因组 / 核酸数据库,GSA,中国国家基因库序列档案库，存储大规模基因组数据,https://ngdc.cncb.ac.cn/gsa/,国家生物信息中心维护
+生物信息学数据库资源,基因组 / 核酸数据库,RCoV19,新冠病毒基因组数据库，实时更新全球病毒序列，变异分析,https://ngdc.cncb.ac.cn/rcov19/,国家生物信息中心维护
+生物信息学数据库资源,蛋白质数据库,UniProt,高质量蛋白质序列和功能注释数据库，包含 Swiss-Prot 和 TrEMBL 两部分,https://www.uniprot.org/,全球蛋白质序列权威数据库
+生物信息学数据库资源,蛋白质数据库,PDB,蛋白质三维结构数据库，存储实验测定的蛋白质结构,https://www.rcsb.org/,结构生物学研究基础资源
+生物信息学数据库资源,蛋白质数据库,InterPro,蛋白质家族、结构域和功能位点分类数据库，整合多个成员数据库,https://www.ebi.ac.uk/interpro/,提供蛋白质功能综合注释
+生物信息学数据库资源,蛋白质数据库,STRINGdb,蛋白质互作数据库，整合实验和预测互作信息，提供功能富集分析,https://string-db.org/,研究蛋白质功能网络的重要资源
+生物信息学数据库资源,功能注释数据库,KEGG,代谢通路和功能注释数据库，提供通路图和基因功能分类,https://www.kegg.jp/,生物通路分析的标准工具
+生物信息学数据库资源,功能注释数据库,GO,基因本体论数据库，提供基因功能的标准化分类系统,https://www.geneontology.org/,功能富集分析的基础资源
+生物信息学数据库资源,功能注释数据库,Reactome,通路知识库，提供详细的生物通路描述和可视化,https://reactome.org/,支持通路分析和可视化
+生物信息学数据库资源,功能注释数据库,OMIM,人类孟德尔遗传疾病数据库，收集单基因遗传病信息,https://www.omim.org/,医学遗传学研究重要资源
+生物信息学工作流与容器化工具,工作流管理系统,Nextflow,基于数据流的工作流管理系统，支持分布式计算，适合大规模生信分析,https://www.nextflow.io/,跨平台、可重现的复杂分析流程
+生物信息学工作流与容器化工具,工作流管理系统,Snakemake,基于 Python 的工作流系统，自动推断依赖关系，支持资源优化和并行执行,https://snakemake.readthedocs.io/,可重现研究和复杂数据分析
+生物信息学工作流与容器化工具,工作流管理系统,Luigi,支持并行和分布式计算，处理大型工作流和多样本，提供可视化监控,https://luigi.readthedocs.io/,数据密集型计算和 ETL 流程
+生物信息学工作流与容器化工具,工作流管理系统,Airflow,提供丰富可视化界面和监控功能的工作流管理平台,https://airflow.apache.org/,任务调度和监控，适合生产环境
+生物信息学工作流与容器化工具,工作流管理系统,bpipe,支持并行计算，处理大型工作流，通过插件机制提供灵活功能定制,https://github.com/pmccarthy91/bpipe,生物信息学数据分析流程管理
+生物信息学工作流与容器化工具,容器化工具,Docker,应用容器化平台，将软件及其依赖打包成容器，确保环境一致性,https://www.docker.com/,快速部署、环境隔离、易于分享
+生物信息学工作流与容器化工具,容器化工具,Singularity,科学计算容器化工具，特别适合 HPC 环境，无需 root 权限运行,https://sylabs.io/singularity/,安全、便携、适合高性能计算
+生物信息学工作流与容器化工具,容器化工具,Kubernetes,容器编排系统，管理大规模容器化应用，提供自动扩展和高可用性,https://kubernetes.io/,大规模生信工作流部署和管理
+生物信息学工作流与容器化工具,容器化工具,Argo Workflows,基于 Kubernetes 的工作流管理系统，支持容器化生物信息学工作流,https://argoproj.github.io/argo-workflows/,云原生环境中的复杂分析流程管理

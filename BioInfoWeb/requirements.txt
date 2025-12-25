@@ -1,0 +1,10 @@
+# Main
+flask
+sqlalchemy
+flask-socketio
+pymysql
+werkzeug
+
+# In api
+ViennaRNA
+biopython

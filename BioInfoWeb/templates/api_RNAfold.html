@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RNAfold - RNA二级结构预测</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .rna-info {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .rna-sequence {
+            font-family: monospace;
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 1.1em;
+            letter-spacing: 1px;
+        }
+        .structure-visual {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+        .upload-card {
+            border: 2px solid #4caf50;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .upload-card:hover {
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.2);
+            transform: translateY(-2px);
+        }
+        .file-list-item {
+            border-left: 4px solid #4caf50;
+            margin-bottom: 8px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .progress-bar-custom {
+            background-color: #4caf50;
+        }
+        .task-card {
+            border-left: 4px solid #4caf50;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <!-- 导航 -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4 rounded">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{{ url_for('index') }}">
+                    <i class="bi bi-house-door me-2"></i>Back to home
+                </a>
+                <div class="navbar-nav">
+                    <a class="nav-link" href="{{ url_for('api_test') }}">
+                        <i class="bi bi-gear me-1"></i>AppTest
+                    </a>
+                    <a class="nav-link active" href="{{ url_for('api_RNAfold') }}">
+                        <i class="bi bi-dna me-1"></i>RNAfold
+                    </a>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- 页面标题 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="mb-3">
+                    <i class="bi bi-dna text-success me-2"></i>RNAfold - RNA二级结构预测
+                </h2>
+                <div class="rna-info">
+                    <h5><i class="bi bi-info-circle me-2"></i>关于 RNAfold</h5>
+                    <p class="mb-2">RNAfold 是 ViennaRNA 软件包的一部分，用于预测 RNA 分子的最小自由能二级结构。</p>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <p class="mb-1"><i class="bi bi-check-circle me-2"></i><strong>支持的文件格式:</strong> .fasta, .fa, .txt, .seq</p>
+                            <p class="mb-1"><i class="bi bi-shield-check me-2"></i><strong>最大文件大小:</strong> 10MB</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><i class="bi bi-file-earmark-text me-2"></i><strong>输出结果:</strong> 二级结构点括号表示</p>
+                            <p class="mb-0"><i class="bi bi-lightning-charge me-2"></i><strong>输出结果:</strong> 自由能、可视化等</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 文件上传区域 -->
+        <div class="card upload-card mb-4">
+            <div class="card-header bg-success bg-opacity-10">
+                <h5 class="mb-0">
+                    <i class="bi bi-cloud-arrow-up me-2"></i>上传 FASTA 文件进行批量分析
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- 文件选择按钮 -->
+                <div class="text-center mb-4">
+                    <input type="file" id="fileInput" 
+                           accept=".fasta,.fa,.txt,.seq" 
+                           multiple
+                           style="display: none;">
+                    <button id="selectFileBtn" class="btn btn-lg btn-success">
+                        <i class="bi bi-file-earmark-plus me-2"></i>选择文件
+                    </button>
+                    <p class="text-muted mt-2">
+                        <i class="bi bi-exclamation-circle me-1"></i>
+                        点击按钮选择FASTA格式文件，支持多选
+                    </p>
+                </div>
+                
+                <!-- 文件列表显示区域 -->
+                <div id="fileListSection" class="mb-4" style="display: none;">
+                    <h6 class="mb-3">
+                        <i class="bi bi-files me-2"></i>已选择文件
+                    </h6>
+                    <div id="fileList" class="mb-3"></div>
+                    
+                    <!-- 操作按钮 -->
+                    <div class="d-flex justify-content-between">
+                        <button id="clearFilesBtn" class="btn btn-outline-secondary">
+                            <i class="bi bi-trash me-1"></i>清空列表
+                        </button>
+                        <button id="uploadBtn" class="btn btn-success">
+                            <i class="bi bi-cloud-upload me-1"></i>开始分析
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 无文件时的提示 -->
+                <div id="noFilesMessage" class="text-center text-muted py-4">
+                    <i class="bi bi-file-earmark-excel display-6 mb-3"></i>
+                    <p>尚未选择任何文件</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 任务状态区域 -->
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="bi bi-clock-history me-2"></i>分析状态
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="tasksContainer">
+                    <div id="noTasksMessage" class="text-center text-muted py-4">
+                        <i class="bi bi-hourglass-split display-6 mb-3"></i>
+                        <p>暂无分析任务</p>
+                        <small>上传文件后，任务将显示在这里</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="navbar-nav">
+            <a class="nav-link" href="{{ url_for('api') }}">Back to api</a>
+        </div>
+        
+        <!-- 页脚 -->
+        <footer class="text-center mt-5 mb-4 text-muted">
+            <hr>
+            <p class="mb-1">RNAfold 文件处理系统</p>
+            <small>基于 ViennaRNA 的 RNA 二级结构预测工具</small>
+        </footer>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // 页面类型
+        const pageType = 'rnafold';
+        let selectedFiles = [];
+        
+        // DOM 元素
+        const fileInput = document.getElementById('fileInput');
+        const selectFileBtn = document.getElementById('selectFileBtn');
+        const fileListSection = document.getElementById('fileListSection');
+        const fileList = document.getElementById('fileList');
+        const noFilesMessage = document.getElementById('noFilesMessage');
+        const clearFilesBtn = document.getElementById('clearFilesBtn');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const tasksContainer = document.getElementById('tasksContainer');
+        const noTasksMessage = document.getElementById('noTasksMessage');
+        
+        // 点击选择文件按钮
+        selectFileBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        // 文件选择变化
+        fileInput.addEventListener('change', handleFileSelection);
+        
+        // 清空文件列表
+        clearFilesBtn.addEventListener('click', clearFileList);
+        
+        // 上传文件
+        uploadBtn.addEventListener('click', uploadFiles);
+        
+        // 处理文件选择
+        function handleFileSelection(event) {
+            const files = Array.from(event.target.files);
+            
+            // 验证文件
+            const validFiles = files.filter(file => {
+                const ext = file.name.split('.').pop().toLowerCase();
+                const validExts = ['fasta', 'fa', 'txt', 'seq'];
+                return validExts.includes(ext) && file.size <= 10 * 1024 * 1024; // 10MB限制
+            });
+            
+            const invalidFiles = files.filter(file => {
+                const ext = file.name.split('.').pop().toLowerCase();
+                const validExts = ['fasta', 'fa', 'txt', 'seq'];
+                return !validExts.includes(ext) || file.size > 10 * 1024 * 1024;
+            });
+            
+            // 显示无效文件警告
+            if (invalidFiles.length > 0) {
+                let warningMsg = '以下文件不符合要求：\n';
+                invalidFiles.forEach(file => {
+                    const ext = file.name.split('.').pop().toLowerCase();
+                    const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                    if (!['fasta', 'fa', 'txt', 'seq'].includes(ext)) {
+                        warningMsg += `• ${file.name} (不支持的文件格式: .${ext})\n`;
+                    } else if (file.size > 10 * 1024 * 1024) {
+                        warningMsg += `• ${file.name} (文件过大: ${sizeMB}MB > 10MB)\n`;
+                    }
+                });
+                alert(warningMsg);
+            }
+            
+            // 添加有效文件到列表
+            if (validFiles.length > 0) {
+                selectedFiles = [...selectedFiles, ...validFiles];
+                updateFileList();
+            }
+            
+            // 重置文件输入
+            fileInput.value = '';
+        }
+        
+        // 更新文件列表显示
+        function updateFileList() {
+            if (selectedFiles.length === 0) {
+                fileListSection.style.display = 'none';
+                noFilesMessage.style.display = 'block';
+                return;
+            }
+            
+            fileListSection.style.display = 'block';
+            noFilesMessage.style.display = 'none';
+            
+            let html = '';
+            let totalSize = 0;
+            
+            selectedFiles.forEach((file, index) => {
+                totalSize += file.size;
+                const ext = file.name.split('.').pop().toLowerCase();
+                const sizeFormatted = formatFileSize(file.size);
+                
+                html += `
+                    <div class="file-list-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="badge bg-success me-2">${ext}</span>
+                                <span class="fw-medium">${file.name}</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <span class="text-muted me-3">${sizeFormatted}</span>
+                                <button class="btn btn-sm btn-outline-danger" onclick="removeFile(${index})">
+                                    <i class="bi bi-x"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            // 添加总计信息
+            html += `
+                <div class="d-flex justify-content-between align-items-center mt-3 p-3 bg-light rounded">
+                    <div>
+                        <span class="fw-medium">总计: ${selectedFiles.length} 个文件</span>
+                    </div>
+                    <div>
+                        <span class="text-muted">总大小: ${formatFileSize(totalSize)}</span>
+                    </div>
+                </div>
+            `;
+            
+            fileList.innerHTML = html;
+            uploadBtn.disabled = false;
+        }
+        
+        // 移除单个文件
+        window.removeFile = function(index) {
+            selectedFiles.splice(index, 1);
+            updateFileList();
+        };
+        
+        // 清空文件列表
+        function clearFileList() {
+            selectedFiles = [];
+            updateFileList();
+        }
+        
+        // 格式化文件大小
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // 上传文件
+        async function uploadFiles() {
+            if (selectedFiles.length === 0) {
+                alert('请先选择文件');
+                return;
+            }
+            
+            const formData = new FormData();
+            selectedFiles.forEach(file => {
+                formData.append('files', file);
+            });
+            
+            // 禁用按钮并显示加载状态
+            const originalBtnText = uploadBtn.innerHTML;
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = `
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                上传中...
+            `;
+            
+            try {
+                const response = await fetch(`/upload/${pageType}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // 添加任务到界面
+                    addTask(result.task_id);
+                    
+                    // 开始轮询任务状态
+                    startPolling(result.task_id);
+                    
+                    // 清空文件列表
+                    clearFileList();
+                    
+                    // 显示成功消息
+                    showAlert('success', '文件上传成功！已开始分析。');
+                    
+                } else {
+                    showAlert('danger', `上传失败: ${result.error || '未知错误'}`);
+                }
+            } catch (error) {
+                showAlert('danger', `网络错误: ${error.message}`);
+            } finally {
+                // 恢复按钮状态
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = originalBtnText;
+            }
+        }
+        
+        // 显示提示消息
+        function showAlert(type, message) {
+            const alertHtml = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            
+            const alertContainer = document.createElement('div');
+            alertContainer.innerHTML = alertHtml;
+            document.querySelector('.card-body').prepend(alertContainer.firstChild);
+            
+            // 3秒后自动消失
+            setTimeout(() => {
+                const alert = document.querySelector('.alert');
+                if (alert) {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }
+            }, 3000);
+        }
+        
+        // 任务管理
+        let currentTasks = new Set();
+        
+        // 添加任务到界面
+        function addTask(taskId) {
+            currentTasks.add(taskId);
+            
+            // 隐藏"无任务"消息
+            noTasksMessage.style.display = 'none';
+            
+            // 创建任务卡片
+            const taskCard = document.createElement('div');
+            taskCard.className = 'card task-card';
+            taskCard.id = `task-${taskId}`;
+            taskCard.innerHTML = `
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <h6 class="mb-0">
+                                <i class="bi bi-hourglass-split text-warning me-2"></i>
+                                任务ID: ${taskId.substring(0, 8)}...
+                            </h6>
+                            <small class="text-muted">开始时间: ${new Date().toLocaleTimeString()}</small>
+                        </div>
+                        <span class="badge bg-warning">等待中</span>
+                    </div>
+                    
+                    <p class="mb-2">等待处理...</p>
+                    
+                    <div class="progress mb-2" style="height: 20px;">
+                        <div class="progress-bar progress-bar-custom progress-bar-striped progress-bar-animated" 
+                             role="progressbar" style="width: 0%">0%</div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">状态: <span class="task-status-text">等待中</span></small>
+                        <div class="task-actions"></div>
+                    </div>
+                </div>
+            `;
+            
+            tasksContainer.insertBefore(taskCard, noTasksMessage);
+        }
+        
+        // 轮询任务状态
+        async function pollTaskStatus(taskId) {
+            try {
+                const response = await fetch(`/status/${taskId}`);
+                const taskInfo = await response.json();
+                
+                if (response.ok) {
+                    updateTaskUI(taskId, taskInfo);
+                    
+                    // 如果任务完成或出错，停止轮询
+                    if (taskInfo.status === 'completed' || taskInfo.status === 'error') {
+                        currentTasks.delete(taskId);
+                    } else {
+                        // 继续轮询
+                        setTimeout(() => pollTaskStatus(taskId), 2000);
+                    }
+                }
+            } catch (error) {
+                console.error('轮询错误:', error);
+                // 出错时继续尝试
+                setTimeout(() => pollTaskStatus(taskId), 5000);
+            }
+        }
+        
+        // 开始轮询
+        function startPolling(taskId) {
+            pollTaskStatus(taskId);
+        }
+        
+        // 更新任务UI
+        function updateTaskUI(taskId, taskInfo) {
+            const taskCard = document.getElementById(`task-${taskId}`);
+            if (!taskCard) return;
+            
+            const statusBadge = taskCard.querySelector('.badge');
+            const message = taskCard.querySelector('p');
+            const progressBar = taskCard.querySelector('.progress-bar');
+            const statusText = taskCard.querySelector('.task-status-text');
+            const actions = taskCard.querySelector('.task-actions');
+            
+            // 更新状态
+            let statusClass, statusBadgeText;
+            switch(taskInfo.status) {
+                case 'pending':
+                    statusClass = 'bg-secondary';
+                    statusBadgeText = '等待中';
+                    break;
+                case 'processing':
+                    statusClass = 'bg-warning';
+                    statusBadgeText = '处理中';
+                    break;
+                case 'completed':
+                    statusClass = 'bg-success';
+                    statusBadgeText = '已完成';
+                    break;
+                case 'error':
+                    statusClass = 'bg-danger';
+                    statusBadgeText = '错误';
+                    break;
+                default:
+                    statusClass = 'bg-secondary';
+                    statusBadgeText = taskInfo.status;
+            }
+            
+            statusBadge.className = `badge ${statusClass}`;
+            statusBadge.textContent = statusBadgeText;
+            
+            // 更新进度
+            const progress = taskInfo.progress || 0;
+            progressBar.style.width = `${progress}%`;
+            progressBar.textContent = `${progress}%`;
+            
+            // 更新消息
+            if (taskInfo.message) {
+                message.textContent = taskInfo.message;
+                statusText.textContent = taskInfo.message;
+            }
+            
+            // 更新操作按钮
+            actions.innerHTML = '';
+            
+            if (taskInfo.status === 'completed' && taskInfo.download_url) {
+                const downloadBtn = document.createElement('a');
+                downloadBtn.href = taskInfo.download_url;
+                downloadBtn.className = 'btn btn-sm btn-success';
+                downloadBtn.innerHTML = '<i class="bi bi-download me-1"></i>下载结果';
+                actions.appendChild(downloadBtn);
+            }
+        }
+        
+        // 页面加载时检查现有任务
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch('/tasks');
+                const data = await response.json();
+                
+                if (response.ok && data.tasks) {
+                    for (const taskId in data.tasks) {
+                        const task = data.tasks[taskId];
+                        if (task.status !== 'completed' && task.status !== 'error') {
+                            addTask(taskId);
+                            startPolling(taskId);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('加载任务失败:', error);
+            }
+        });
+        
+        // 初始化Bootstrap工具提示
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

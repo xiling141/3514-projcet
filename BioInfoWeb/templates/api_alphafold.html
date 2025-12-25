@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlphaFold3 - 蛋白质结构预测</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --alphafold-primary: #3a86ff;
+            --alphafold-secondary: #8338ec;
+            --alphafold-success: #06d6a0;
+            --alphafold-warning: #ffd166;
+            --alphafold-danger: #ef476f;
+        }
+        
+        .alphafold-gradient {
+            background: linear-gradient(135deg, var(--alphafold-primary), var(--alphafold-secondary));
+            color: white;
+        }
+        
+        .alphafold-card {
+            border: 2px solid var(--alphafold-primary);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(58, 134, 255, 0.1);
+        }
+        
+        .alphafold-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(58, 134, 255, 0.2);
+        }
+        
+        .protein-visual {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(45deg, #1a1a2e, #16213e);
+            color: #06d6a0;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow-x: auto;
+            border: 1px solid var(--alphafold-primary);
+        }
+        
+        .progress-alphafold {
+            height: 30px;
+            border-radius: 15px;
+            background-color: #e9ecef;
+        }
+        
+        .progress-alphafold .progress-bar {
+            background: linear-gradient(90deg, var(--alphafold-primary), var(--alphafold-secondary));
+            border-radius: 15px;
+            transition: width 1s ease-in-out;
+        }
+        
+        .file-list-alphafold {
+            border-left: 4px solid var(--alphafold-primary);
+            background-color: rgba(58, 134, 255, 0.05);
+        }
+        
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        .gpu-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .gpu-active {
+            background-color: var(--alphafold-success);
+        }
+        
+        .gpu-idle {
+            background-color: var(--alphafold-warning);
+        }
+        
+        .timer-display {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            color: var(--alphafold-primary);
+            background-color: rgba(58, 134, 255, 0.1);
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        .structure-preview {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #0f3460, #1a1a2e);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin: 10px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .structure-preview::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0%,
+                var(--alphafold-primary) 10%,
+                transparent 20%,
+                var(--alphafold-secondary) 30%,
+                transparent 40%,
+                var(--alphafold-success) 50%,
+                transparent 60%,
+                var(--alphafold-warning) 70%,
+                transparent 80%,
+                var(--alphafold-danger) 90%,
+                transparent 100%
+            );
+            animation: rotate 10s linear infinite;
+        }
+        
+        .structure-preview::after {
+            content: 'α-螺旋  β-折叠  无规卷曲';
+            position: absolute;
+            background: rgba(26, 26, 46, 0.9);
+            padding: 20px;
+            border-radius: 8px;
+            z-index: 1;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid px-0">
+        <!-- 导航栏 -->
+        <nav class="navbar navbar-expand-lg navbar-dark alphafold-gradient py-3">
+            <div class="container">
+                <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
+                    <i class="bi bi-cpu me-2"></i>BioCompute Platform
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('index') }}">
+                                <i class="bi bi-house me-1"></i>首页
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('api_test') }}">
+                                <i class="bi bi-gear me-1"></i>AppTest
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('api_RNAfold') }}">
+                                <i class="bi bi-dna me-1"></i>RNAfold
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{{ url_for('api_alphafold') }}">
+                                <i class="bi bi-diagram-3 me-1"></i>AlphaFold3
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 主内容区 -->
+        <div class="container mt-4">
+            <!-- 页头 -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h1 class="fw-bold">
+                                <i class="bi bi-diagram-3 me-2" style="color: var(--alphafold-primary);"></i>
+                                AlphaFold3
+                            </h1>
+                            <p class="lead mb-0">基于深度学习的蛋白质结构预测</p>
+                        </div>
+                        <div class="text-end">
+                            <div class="timer-display">
+                                <i class="bi bi-clock me-2"></i>
+                                <span id="currentTime">00:00:00</span>
+                            </div>
+                            <div class="mt-2">
+                                <span class="gpu-indicator gpu-active"></span>
+                                <small class="text-muted">GPU 状态: 可用</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 介绍区域 -->
+            <div class="row mb-4">
+                <div class="col-lg-8">
+                    <div class="card alphafold-card">
+                        <div class="card-body">
+                            <h4 class="card-title">
+                                <i class="bi bi-info-circle me-2"></i>关于 AlphaFold3
+                            </h4>
+                            <p class="card-text">
+                                AlphaFold3 是 DeepMind 开发的最新蛋白质结构预测工具，能够高精度预测蛋白质的三维结构，
+                                包括蛋白质-蛋白质、蛋白质-配体、蛋白质-核酸复合物等。
+                            </p>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2">
+                                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                            <strong>支持格式:</strong> .json
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                            <strong>GPU 加速:</strong> NVIDIA CUDA 支持
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2">
+                                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                            <strong>输出格式:</strong> cif
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                            <strong>进度监控:</strong> 实时进度更新
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="structure-preview">
+                        <!-- 蛋白质结构预览 -->
+                    </div>
+                    <div class="text-center mt-2">
+                        <small class="text-muted">
+                            <i class="bi bi-lightbulb me-1"></i>
+                            3D 蛋白质结构可视化预览
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 文件上传区域 -->
+            <div class="card alphafold-card mb-4">
+                <div class="card-header alphafold-gradient text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-cloud-arrow-up me-2"></i>上传蛋白质序列文件
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- 选择文件按钮 -->
+                    <div class="text-center mb-4 py-4">
+                        <input type="file" id="fileInput" 
+                               accept=".json,.fasta,.fa,.pdb,.cif" 
+                               multiple
+                               style="display: none;">
+                        <button id="selectFileBtn" class="btn btn-lg alphafold-gradient text-white">
+                            <i class="bi bi-file-earmark-plus me-2"></i>选择蛋白质序列文件
+                        </button>
+                        <p class="text-muted mt-3">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            JSON输入
+                        </p>
+                    </div>
+                    
+                    <!-- 文件列表显示 -->
+                    <div id="fileListSection" class="mb-4" style="display: none;">
+                        <h6 class="mb-3">
+                            <i class="bi bi-files me-2"></i>已选择文件
+                        </h6>
+                        <div id="fileList" class="mb-3"></div>
+                        
+                        <!-- 操作按钮 -->
+                        <div class="d-flex justify-content-between">
+                            <button id="clearFilesBtn" class="btn btn-outline-secondary">
+                                <i class="bi bi-trash me-1"></i>清空列表
+                            </button>
+                            <button id="uploadBtn" class="btn alphafold-gradient text-white">
+                                <i class="bi bi-rocket-takeoff me-1"></i>开始结构预测
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 无文件提示 -->
+                    <div id="noFilesMessage" class="text-center text-muted py-5">
+                        <i class="bi bi-file-earmark-excel display-1 mb-3" style="color: #e9ecef;"></i>
+                        <h5>未选择任何文件</h5>
+                        <p class="mb-0">请点击上方按钮选择蛋白质序列文件</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 进度监控区域 -->
+            <div class="card alphafold-card">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-speedometer2 me-2"></i>预测进度监控
+                        </h5>
+                        <button id="refreshStatus" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-arrow-clockwise"></i> 刷新
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="tasksContainer">
+                        <div id="noTasksMessage" class="text-center text-muted py-5">
+                            <i class="bi bi-hourglass-split display-1 mb-3" style="color: #e9ecef;"></i>
+                            <h5>暂无预测任务</h5>
+                            <p>上传文件后，预测任务将显示在这里</p>
+                            <small class="text-muted">AlphaFold3 预测通常需要 5-30 分钟/序列</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 信息面板 -->
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            <i class="bi bi-gpu-card display-4 mb-3" style="color: var(--alphafold-primary);"></i>
+                            <h5>GPU 加速</h5>
+                            <p class="small text-muted">使用 NVIDIA GPU 加速计算，大幅缩短预测时间</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            <i class="bi bi-graph-up display-4 mb-3" style="color: var(--alphafold-success);"></i>
+                            <h5>高精度预测</h5>
+                            <p class="small text-muted">基于深度学习的先进算法，预测精度接近实验水平</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            <i class="bi bi-clock-history display-4 mb-3" style="color: var(--alphafold-secondary);"></i>
+                            <h5>实时监控</h5>
+                            <p class="small text-muted">每10分钟自动更新进度，随时掌握预测状态</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="navbar-nav">
+                <a class="nav-link" href="{{ url_for('api') }}">Back to api</a>
+            </div>
+            <div class="navbar-nav">
+                <a class="nav-link" href="{{ url_for('terminal_page') }}">Go to terminal</a>
+            </div>
+
+            <!-- 页脚 -->
+            <footer class="text-center mt-5 mb-4 text-muted">
+                <hr>
+                <p class="mb-1">
+                    <i class="bi bi-diagram-3 me-1"></i>
+                    AlphaFold3 蛋白质结构预测平台
+                </p>
+                <small>基于 DeepMind AlphaFold3 技术，提供专业的蛋白质结构预测服务</small>
+            </footer>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // 页面配置
+        const PAGE_CONFIG = {
+            page_type: 'alphafold',
+            allowed_extensions: ['.json', '.fasta', '.fa', '.pdb', '.cif'],
+            max_size_mb: 10,
+            poll_interval: 30000,  // 30秒轮询一次
+            progress_update_interval: 600000  // 10分钟更新一次进度（后端控制）
+        };
+
+        // 全局变量
+        let selectedFiles = [];
+        let currentTasks = new Set();
+        let pollingInterval;
+
+        // DOM 元素
+        const elements = {
+            fileInput: document.getElementById('fileInput'),
+            selectFileBtn: document.getElementById('selectFileBtn'),
+            fileListSection: document.getElementById('fileListSection'),
+            fileList: document.getElementById('fileList'),
+            noFilesMessage: document.getElementById('noFilesMessage'),
+            clearFilesBtn: document.getElementById('clearFilesBtn'),
+            uploadBtn: document.getElementById('uploadBtn'),
+            tasksContainer: document.getElementById('tasksContainer'),
+            noTasksMessage: document.getElementById('noTasksMessage'),
+            refreshStatus: document.getElementById('refreshStatus'),
+            currentTime: document.getElementById('currentTime')
+        };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initEventListeners();
+            updateCurrentTime();
+            loadExistingTasks();
+            
+            // 每30秒轮询一次任务状态
+            pollingInterval = setInterval(pollAllTasks, 30000);
+        });
+
+        // 初始化事件监听
+        function initEventListeners() {
+            elements.selectFileBtn.addEventListener('click', () => elements.fileInput.click());
+            elements.fileInput.addEventListener('change', handleFileSelection);
+            elements.clearFilesBtn.addEventListener('click', clearFileList);
+            elements.uploadBtn.addEventListener('click', uploadFiles);
+            elements.refreshStatus.addEventListener('click', refreshAllTasks);
+        }
+
+        // 更新当前时间
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeStr = now.toTimeString().split(' ')[0];
+            elements.currentTime.textContent = timeStr;
+            setTimeout(updateCurrentTime, 1000);
+        }
+
+        // 处理文件选择
+        function handleFileSelection(event) {
+            const files = Array.from(event.target.files);
+            
+            // 验证文件
+            const validFiles = files.filter(file => {
+                const ext = file.name.split('.').pop().toLowerCase();
+                const isValidExt = PAGE_CONFIG.allowed_extensions.includes('.' + ext);
+                const isValidSize = file.size <= PAGE_CONFIG.max_size_mb * 1024 * 1024;
+                return isValidExt && isValidSize;
+            });
+
+            const invalidFiles = files.filter(file => {
+                const ext = file.name.split('.').pop().toLowerCase();
+                const isValidExt = PAGE_CONFIG.allowed_extensions.includes('.' + ext);
+                const isValidSize = file.size <= PAGE_CONFIG.max_size_mb * 1024 * 1024;
+                return !isValidExt || !isValidSize;
+            });
+
+            // 显示无效文件警告
+            if (invalidFiles.length > 0) {
+                let warningMsg = '以下文件不符合要求：\n';
+                invalidFiles.forEach(file => {
+                    const ext = file.name.split('.').pop().toLowerCase();
+                    const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                    if (!PAGE_CONFIG.allowed_extensions.includes('.' + ext)) {
+                        warningMsg += `• ${file.name} (不支持的文件格式: .${ext})\n`;
+                    } else {
+                        warningMsg += `• ${file.name} (文件过大: ${sizeMB}MB > ${PAGE_CONFIG.max_size_mb}MB)\n`;
+                    }
+                });
+                showAlert('warning', warningMsg);
+            }
+
+            // 添加有效文件到列表
+            if (validFiles.length > 0) {
+                selectedFiles = [...selectedFiles, ...validFiles];
+                updateFileList();
+            }
+
+            elements.fileInput.value = '';
+        }
+
+        // 更新文件列表显示
+        function updateFileList() {
+            if (selectedFiles.length === 0) {
+                elements.fileListSection.style.display = 'none';
+                elements.noFilesMessage.style.display = 'block';
+                return;
+            }
+
+            elements.fileListSection.style.display = 'block';
+            elements.noFilesMessage.style.display = 'none';
+
+            let html = '';
+            let totalSize = 0;
+            let sequenceCount = 0;
+
+            selectedFiles.forEach((file, index) => {
+                totalSize += file.size;
+                const ext = file.name.split('.').pop().toLowerCase();
+                const sizeFormatted = formatFileSize(file.size);
+                
+                // 估计序列数量（简化估算）
+                if (['.fasta', '.fa'].includes('.' + ext)) {
+                    sequenceCount += 5; // 简化估算
+                } else if ('.json' === '.' + ext) {
+                    sequenceCount += 1;
+                }
+
+                html += `
+                    <div class="file-list-alphafold p-3 mb-2 rounded">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="badge alphafold-gradient me-2">${ext.toUpperCase()}</span>
+                                <span class="fw-medium">${file.name}</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <span class="text-muted me-3">${sizeFormatted}</span>
+                                <span class="badge bg-info me-3">~${estimateProcessingTime(ext)}</span>
+                                <button class="btn btn-sm btn-outline-danger" onclick="removeFile(${index})">
+                                    <i class="bi bi-x"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // 添加总计信息
+            html += `
+                <div class="d-flex justify-content-between align-items-center mt-3 p-3 bg-light rounded">
+                    <div>
+                        <h6 class="mb-0">汇总信息</h6>
+                        <small class="text-muted">${selectedFiles.length} 个文件，约 ${sequenceCount} 个序列</small>
+                    </div>
+                    <div>
+                        <span class="fw-medium">总大小: ${formatFileSize(totalSize)}</span>
+                        <br>
+                        <small class="text-muted">预计时间: ~${estimateTotalProcessingTime(sequenceCount)}</small>
+                    </div>
+                </div>
+            `;
+
+            elements.fileList.innerHTML = html;
+            elements.uploadBtn.disabled = false;
+        }
+
+        // 移除单个文件
+        window.removeFile = function(index) {
+            selectedFiles.splice(index, 1);
+            updateFileList();
+        };
+
+        // 清空文件列表
+        function clearFileList() {
+            selectedFiles = [];
+            updateFileList();
+        }
+
+        // 估算单个文件处理时间
+        function estimateProcessingTime(ext) {
+            const times = {
+                'json': '5-10min',
+                'fasta': '15-30min',
+                'fa': '15-30min',
+                'pdb': '10-20min',
+                'cif': '10-20min'
+            };
+            return times[ext] || '10-20min';
+        }
+
+        // 估算总处理时间
+        function estimateTotalProcessingTime(sequenceCount) {
+            if (sequenceCount <= 1) return '5-10分钟';
+            if (sequenceCount <= 3) return '15-30分钟';
+            if (sequenceCount <= 10) return '1-2小时';
+            return '2小时以上';
+        }
+
+        // 格式化文件大小
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // 显示提示消息
+        function showAlert(type, message, duration = 5000) {
+            const alertHtml = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+                        <div>${message.replace(/\n/g, '<br>')}</div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+
+            const alertContainer = document.createElement('div');
+            alertContainer.innerHTML = alertHtml;
+            document.querySelector('.container').prepend(alertContainer.firstChild);
+
+            setTimeout(() => {
+                const alert = document.querySelector('.alert');
+                if (alert) {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }
+            }, duration);
+        }
+
+        // 上传文件
+        async function uploadFiles() {
+            if (selectedFiles.length === 0) {
+                showAlert('warning', '请先选择文件');
+                return;
+            }
+
+            const formData = new FormData();
+            selectedFiles.forEach(file => {
+                formData.append('files', file);
+            });
+
+            // 禁用按钮并显示加载状态
+            const originalBtnText = elements.uploadBtn.innerHTML;
+            elements.uploadBtn.disabled = true;
+            elements.uploadBtn.innerHTML = `
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                正在启动 AlphaFold3...
+            `;
+
+            try {
+                const response = await fetch(`/upload/${PAGE_CONFIG.page_type}`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // 添加任务到界面
+                    addTask(result.task_id);
+                    
+                    // 开始轮询任务状态
+                    startPollingTask(result.task_id);
+                    
+                    // 清空文件列表
+                    clearFileList();
+                    
+                    // 显示成功消息
+                    showAlert('success', `AlphaFold3 任务已启动！<br>任务ID: ${result.task_id}<br>请稍后查看预测结果。`);
+                    
+                } else {
+                    showAlert('danger', `上传失败: ${result.error || '未知错误'}`);
+                }
+            } catch (error) {
+                showAlert('danger', `网络错误: ${error.message}`);
+            } finally {
+                // 恢复按钮状态
+                elements.uploadBtn.disabled = false;
+                elements.uploadBtn.innerHTML = originalBtnText;
+            }
+        }
+
+        // 添加任务到界面
+        function addTask(taskId) {
+            currentTasks.add(taskId);
+            
+            // 隐藏"无任务"消息
+            elements.noTasksMessage.style.display = 'none';
+            
+            // 创建任务卡片
+            const taskCard = document.createElement('div');
+            taskCard.className = 'card mb-3 alphafold-card';
+            taskCard.id = `task-${taskId}`;
+            taskCard.innerHTML = `
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6 class="mb-1">
+                                <i class="bi bi-diagram-3 me-2" style="color: var(--alphafold-primary);"></i>
+                                任务: ${taskId.substring(0, 12)}...
+                            </h6>
+                            <small class="text-muted">
+                                <i class="bi bi-clock me-1"></i>
+                                开始时间: <span class="task-start-time">${new Date().toLocaleTimeString()}</span>
+                            </small>
+                        </div>
+                        <span class="status-badge bg-warning text-dark">等待中</span>
+                    </div>
+                    
+                    <p class="mb-2 task-message">准备启动 AlphaFold3...</p>
+                    
+                    <div class="progress-alphafold mb-3">
+                        <div class="progress-bar" role="progressbar" style="width: 0%">
+                            <span class="progress-text">0%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <small class="text-muted">
+                                <i class="bi bi-file-earmark me-1"></i>
+                                输入文件: <span class="task-file-count">0</span> 个
+                            </small>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <small class="text-muted">
+                                <i class="bi bi-calculator me-1"></i>
+                                输出文件: <span class="task-output-count">0</span> 个
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <div class="task-actions mt-3"></div>
+                </div>
+            `;
+            
+            elements.tasksContainer.insertBefore(taskCard, elements.noTasksMessage);
+        }
+
+        // 轮询单个任务状态
+        async function pollTaskStatus(taskId) {
+            try {
+                const response = await fetch(`/status/${taskId}`);
+                const taskInfo = await response.json();
+                
+                if (response.ok) {
+                    updateTaskUI(taskId, taskInfo);
+                    
+                    // 如果任务完成或出错，停止轮询
+                    if (taskInfo.status === 'completed' || taskInfo.status === 'error') {
+                        currentTasks.delete(taskId);
+                    }
+                }
+            } catch (error) {
+                console.error(`轮询任务 ${taskId} 错误:`, error);
+            }
+        }
+
+        // 开始轮询任务
+        function startPollingTask(taskId) {
+            // 立即查询一次
+            pollTaskStatus(taskId);
+            
+            // 每30秒轮询一次
+            const interval = setInterval(() => {
+                if (!currentTasks.has(taskId)) {
+                    clearInterval(interval);
+                    return;
+                }
+                pollTaskStatus(taskId);
+            }, PAGE_CONFIG.poll_interval);
+        }
+
+        // 轮询所有任务状态
+        function pollAllTasks() {
+            currentTasks.forEach(taskId => {
+                pollTaskStatus(taskId);
+            });
+        }
+
+        // 刷新所有任务状态
+        function refreshAllTasks() {
+            const refreshBtn = elements.refreshStatus;
+            const originalIcon = refreshBtn.innerHTML;
+            
+            refreshBtn.disabled = true;
+            refreshBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+            
+            pollAllTasks();
+            
+            setTimeout(() => {
+                refreshBtn.disabled = false;
+                refreshBtn.innerHTML = originalIcon;
+                showAlert('info', '任务状态已刷新');
+            }, 1000);
+        }
+
+        // 更新任务UI
+        function updateTaskUI(taskId, taskInfo) {
+            const taskCard = document.getElementById(`task-${taskId}`);
+            if (!taskCard) return;
+            
+            const statusBadge = taskCard.querySelector('.status-badge');
+            const message = taskCard.querySelector('.task-message');
+            const progressBar = taskCard.querySelector('.progress-bar');
+            const progressText = taskCard.querySelector('.progress-text');
+            const fileCount = taskCard.querySelector('.task-file-count');
+            const outputCount = taskCard.querySelector('.task-output-count');
+            const startTime = taskCard.querySelector('.task-start-time');
+            const actions = taskCard.querySelector('.task-actions');
+            
+            // 更新状态
+            let statusClass, statusText;
+            switch(taskInfo.status) {
+                case 'pending':
+                    statusClass = 'bg-warning text-dark';
+                    statusText = '等待中';
+                    break;
+                case 'processing':
+                    statusClass = 'bg-primary text-white';
+                    statusText = '处理中';
+                    break;
+                case 'completed':
+                    statusClass = 'bg-success text-white';
+                    statusText = '已完成';
+                    break;
+                case 'error':
+                    statusClass = 'bg-danger text-white';
+                    statusText = '错误';
+                    break;
+                default:
+                    statusClass = 'bg-secondary text-white';
+                    statusText = taskInfo.status;
+            }
+            
+            statusBadge.className = `status-badge ${statusClass}`;
+            statusBadge.textContent = statusText;
+            
+            // 更新进度
+            const progress = taskInfo.progress || 0;
+            progressBar.style.width = `${progress}%`;
+            progressText.textContent = `${progress}%`;
+            
+            // 更新消息
+            if (taskInfo.message) {
+                message.textContent = taskInfo.message;
+            }
+            
+            // 更新文件计数
+            if (taskInfo.file_count) {
+                fileCount.textContent = taskInfo.file_count;
+            }
+            
+            // 更新输出文件计数
+            if (taskInfo.current_output_count !== undefined) {
+                outputCount.textContent = taskInfo.current_output_count;
+            } else if (taskInfo.output_files_count) {
+                outputCount.textContent = taskInfo.output_files_count;
+            }
+            
+            // 更新开始时间
+            if (taskInfo.start_time) {
+                const startDate = new Date(taskInfo.start_time);
+                startTime.textContent = startDate.toLocaleTimeString();
+            }
+            
+            // 更新操作按钮
+            actions.innerHTML = '';
+            
+            if (taskInfo.status === 'completed' && taskInfo.download_url) {
+                const downloadBtn = document.createElement('a');
+                downloadBtn.href = taskInfo.download_url;
+                downloadBtn.className = 'btn btn-sm alphafold-gradient text-white';
+                downloadBtn.innerHTML = '<i class="bi bi-download me-1"></i>下载结构文件';
+                actions.appendChild(downloadBtn);
+                
+                // 添加可视化按钮（如果有PDB文件）
+                if (taskInfo.output_files && taskInfo.output_files.some(f => f.endsWith('.pdb'))) {
+                    const visualizeBtn = document.createElement('button');
+                    visualizeBtn.className = 'btn btn-sm btn-outline-primary ms-2';
+                    visualizeBtn.innerHTML = '<i class="bi bi-eye me-1"></i>3D可视化';
+                    visualizeBtn.onclick = () => visualizeStructure(taskId);
+                    actions.appendChild(visualizeBtn);
+                }
+            }
+        }
+
+        // 3D可视化函数（示例）
+        function visualizeStructure(taskId) {
+            showAlert('info', '3D可视化功能正在开发中...');
+            // 这里可以集成 NGL Viewer 或其他3D分子可视化工具
+        }
+
+        // 加载现有任务
+        async function loadExistingTasks() {
+            try {
+                const response = await fetch('/tasks');
+                const data = await response.json();
+                
+                if (response.ok && data.tasks) {
+                    for (const taskId in data.tasks) {
+                        const task = data.tasks[taskId];
+                        if (task.page_type === PAGE_CONFIG.page_type && 
+                            task.status !== 'completed' && 
+                            task.status !== 'error') {
+                            addTask(taskId);
+                            startPollingTask(taskId);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('加载任务失败:', error);
+            }
+        }
+
+        // 页面卸载时清理
+        window.addEventListener('beforeunload', () => {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+            }
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

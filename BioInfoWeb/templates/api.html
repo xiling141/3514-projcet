@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Api page for multiple apps</title>
+</head>
+<body>
+    <h1>Api available</h1>
+    <p>This demo shows how Flask renders HTML templates.</p>
+    <div>
+        <a href="{{ url_for('api_test') }}">AppTest</a>
+    </div>
+    <div>
+        <a href="{{ url_for('api_RNAfold') }}">RNAfold</a>
+    </div>
+    <div>
+        <a href="{{ url_for('api_alphafold') }}">alphafold</a>
+    </div>
+    <div>
+        <a href="{{ url_for('index') }}">Back to Home</a>
+    </div>
+</body>
+</html>
